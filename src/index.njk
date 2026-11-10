@@ -1,0 +1,50 @@
+---
+layout: base.njk
+nav: overview
+---
+{% from "macros.njk" import dots, text %}
+<header class="page-head">
+  <p class="eyebrow">Term {{ site.currentTerm.term }}, {{ site.currentTerm.year }} <span class="this-week" hidden></span></p>
+  <h1>Overview</h1>
+</header>
+
+<div class="cards">
+  {% for c in site.overviewCards %}
+  {% if c.unit %}{% set u = c.unit %}
+  <article class="card unit-card">
+    <p class="eyebrow">{{ u.yearLabel }}</p>
+    <h2><a href="{{ u.url }}">{{ u.title }}</a></h2>
+    {% if u.focus %}<p class="focus">{{ u.focus }}</p>{% endif %}
+    {% if u.blurb %}<p class="muted">{{ text(u.blurb) }}</p>{% endif %}
+    {{ dots(u) }}
+    <p class="meta">{{ u.plannedCount }} of {{ u.lessonCount }} lessons planned · Weeks {{ u.startWeek }} to {{ u.startWeek + u.lessonCount - 1 }}</p>
+    {% if u.nextToPlan %}<p class="next-up">Next to plan: Lesson {{ u.nextToPlan }}</p>{% endif %}
+    <a class="button" href="{{ u.url }}">Open unit</a>
+  </article>
+  {% else %}{% set g = c.group %}
+  <article class="card unit-card empty">
+    <p class="eyebrow">{{ g.label }}</p>
+    <h2 class="placeholder">[Unit to add]</h2>
+    <p class="muted">{{ g.classes | join(", ") }}</p>
+  </article>
+  {% endif %}
+  {% endfor %}
+</div>
+
+{% if site.latestReflections.length %}
+<section>
+  <h2>Latest reflections</h2>
+  <ul class="reflections">
+    {% for r in site.latestReflections %}
+    <li><p class="meta">{{ r.date }} · <a href="{{ r.unit.url }}">{{ r.unit.yearLabel }}</a> · {{ r.scope }}{% if r.class %} · {{ r.class }}{% endif %}</p>{{ r.note | md | safe }}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if site.currentTerm.notes %}
+<section>
+  <h2>Also this term</h2>
+  <div class="prose">{{ site.currentTerm.notes | md | safe }}</div>
+</section>
+{% endif %}

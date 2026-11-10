@@ -1,0 +1,21 @@
+---
+layout: base.njk
+nav: minis
+title: Mini lessons
+permalink: /minis/
+---
+{% from "macros.njk" import text %}
+<header class="page-head">
+  <h1>Mini lessons</h1>
+  <p class="muted">The library of mini lessons. Any lesson in any unit or year can use them.</p>
+</header>
+<div class="cards">
+  {% for m in site.minis %}
+  <article class="card">
+    <p class="eyebrow">{{ m.kind }}{% if m.yearLabel %} · {{ m.yearLabel }}{% endif %}</p>
+    <h2><a href="{{ m.url }}">{{ m.title }}</a></h2>
+    <p class="muted">{{ text(m.summary) }}</p>
+    <p class="meta">Used in {{ m.usedIn.length }} lesson{% if m.usedIn.length != 1 %}s{% endif %}</p>
+  </article>
+  {% endfor %}
+</div>

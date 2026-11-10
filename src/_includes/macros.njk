@@ -1,0 +1,53 @@
+{% macro text(value) -%}
+  {%- if value | isPlaceholder %}<span class="placeholder">{{ value }}</span>{% else %}{{ value | mdInline | safe }}{% endif -%}
+{%- endmacro %}
+
+{% macro lisc(l) %}
+<section class="lisc card">
+  <h2>Learning Intention:</h2>
+  <p>{{ text(l.intention) }}</p>
+  {% if l.criteria and l.criteria.length %}
+  <h2>Success Criteria:</h2>
+  <p>I can:</p>
+  <ul>{% for c in l.criteria %}<li>{{ text(c) }}</li>{% endfor %}</ul>
+  {% endif %}
+</section>
+{% endmacro %}
+
+{% macro codes(list) %}
+{% if list and list.length %}
+<ul class="chips">
+  {% for c in list %}<li><a class="chip" href="{{ c | vc2Url }}" target="_blank" rel="noopener" title="{{ c | vc2Label }}">{{ c }}<span class="chip-label">{{ c | vc2Label }}</span></a></li>{% endfor %}
+</ul>
+{% endif %}
+{% endmacro %}
+
+{% macro resources(list) %}
+<ul class="resources">
+  {% for r in list %}
+    {% if r.label is defined %}
+      <li>{% if r.url %}<a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.label }}</a>{% else %}{{ text(r.label) }}{% endif %}</li>
+    {% else %}
+      <li>{{ text(r) }}</li>
+    {% endif %}
+  {% endfor %}
+</ul>
+{% endmacro %}
+
+{% macro dots(unit) %}
+<ol class="dots" aria-label="{{ unit.plannedCount }} of {{ unit.lessonCount }} lessons planned">
+  {% for s in unit.slots %}<li class="dot {{ s.state }}{% if s.next %} next{% endif %}" data-week="{{ s.week }}" title="Lesson {{ s.number }}, Week {{ s.week }}{% if s.lesson %}: {{ s.lesson.title }}{% endif %}"></li>{% endfor %}
+</ol>
+{% endmacro %}
+
+{% macro reflectionList(list) %}
+{% if list.length %}
+<ul class="reflections">
+  {% for r in list %}
+  <li><p class="meta">{{ r.date }} · {{ r.scope }}{% if r.class %} · {{ r.class }}{% endif %}</p>{% if r.note | isPlaceholder %}<p class="placeholder">{{ r.note }}</p>{% else %}{{ r.note | md | safe }}{% endif %}</li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="muted">No reflections yet.</p>
+{% endif %}
+{% endmacro %}

@@ -1,0 +1,12 @@
+---
+layout: base.njk
+nav: units
+title: Units
+permalink: /units/
+---
+<header class="page-head"><h1>Units</h1></header>
+{% for u in site.units %}
+  {% if loop.first or u.termId != loop.previtem.termId %}<h2>Term {{ u.term }}, {{ u.year }}</h2><ul class="list">{% endif %}
+  <li><a href="{{ u.url }}">{{ u.title }}</a> <span class="muted">· {{ u.yearLabel }} · {{ u.plannedCount }} of {{ u.lessonCount }} planned</span></li>
+  {% if loop.last or u.termId != loop.nextitem.termId %}</ul>{% endif %}
+{% endfor %}

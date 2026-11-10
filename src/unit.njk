@@ -1,0 +1,72 @@
+---
+layout: base.njk
+nav: units
+pagination:
+  data: site.units
+  size: 1
+  alias: unit
+permalink: "{{ unit.url }}"
+eleventyComputed:
+  title: "{{ unit.title }}"
+---
+{% from "macros.njk" import lisc, codes, resources, dots, reflectionList, text %}
+<header class="page-head">
+  <p class="eyebrow">{{ unit.yearLabel }} · Term {{ unit.term }}, {{ unit.year }} · Weeks {{ unit.startWeek }} to {{ unit.startWeek + unit.lessonCount - 1 }}</p>
+  <h1>{{ unit.title }}</h1>
+  {% if unit.focus %}<p class="focus">{{ unit.focus }}</p>{% endif %}
+  {% if unit.body %}<div class="prose">{{ unit.body | md | safe }}</div>{% endif %}
+</header>
+
+{% if unit.lisc %}{{ lisc(unit.lisc) }}{% endif %}
+
+<section>
+  <h2>Lessons <span class="muted small">{{ unit.plannedCount }} of {{ unit.lessonCount }} planned</span></h2>
+  <ol class="lesson-list">
+    {% for s in unit.slots %}
+    <li class="{{ s.state }}{% if s.next %} next{% endif %}" data-week="{{ s.week }}">
+      <span class="num">{{ s.number }}</span>
+      <div>
+        {% if s.lesson %}
+          <a href="{{ s.lesson.url }}">{{ s.lesson.title }}</a>{% if s.state == "draft" %} <span class="pill">Draft</span>{% endif %}
+          <p class="muted">{{ text(s.lesson.summary) }}</p>
+        {% else %}
+          <span class="muted">Not planned yet</span>{% if s.next %} <span class="pill">Next to plan</span>{% endif %}
+        {% endif %}
+        <p class="meta">Week {{ s.week }}<span class="now-pill" hidden> · This week</span></p>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+
+{% if unit.miniGrid.length %}
+<section>
+  <h2>Mini lessons across the unit</h2>
+  <div class="grid-scroll">
+  <table class="mini-grid">
+    <thead><tr><th scope="col">Mini lesson</th>{% for s in unit.slots %}<th scope="col">L{{ s.number }}</th>{% endfor %}</tr></thead>
+    <tbody>
+      {% for row in unit.miniGrid %}
+      <tr>
+        <th scope="row">{% if row.info.url %}<a href="{{ row.info.url }}">{{ row.info.title }}</a>{% else %}{{ row.info.title }}{% endif %}</th>
+        {% for c in row.cells %}<td>{% if c %}<span class="on" title="{{ c.thisWeek }}">{% if c.time | isPlaceholder %}●{% else %}{{ c.time }}{% endif %}</span>{% endif %}</td>{% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+{% endif %}
+
+{% if unit.curriculum.length %}
+<section><h2>Curriculum</h2>{{ codes(unit.curriculum) }}</section>
+{% endif %}
+
+{% if unit.links.length %}
+<section><h2>Resources</h2>{{ resources(unit.links) }}</section>
+{% endif %}
+
+<section>
+  <h2>Reflections</h2>
+  {{ reflectionList(unit.reflections) }}
+</section>

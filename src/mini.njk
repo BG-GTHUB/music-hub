@@ -1,0 +1,39 @@
+---
+layout: base.njk
+nav: minis
+pagination:
+  data: site.minis
+  size: 1
+  alias: mini
+permalink: "{{ mini.url }}"
+eleventyComputed:
+  title: "{{ mini.title }}"
+---
+{% from "macros.njk" import codes, resources, text %}
+<header class="page-head">
+  <p class="eyebrow"><a href="/minis/">Mini lesson</a> · {{ mini.kind }}{% if mini.yearLabel %} · {{ mini.yearLabel }}{% endif %}</p>
+  <h1>{{ mini.title }}</h1>
+  {% if mini.summary %}<p class="focus">{{ text(mini.summary) }}</p>{% endif %}
+</header>
+
+{% if mini.body %}<section><h2>How to run it</h2><div class="prose">{{ mini.body | md | safe }}</div></section>{% endif %}
+
+{% if mini.vocab.length %}
+<section><h2>Music words</h2><ul class="chips">{% for v in mini.vocab %}<li><span class="chip plain">{{ v }}</span></li>{% endfor %}</ul></section>
+{% endif %}
+
+{% if mini.resources.length %}<section><h2>Resources</h2>{{ resources(mini.resources) }}</section>{% endif %}
+
+<section>
+  <h2>Used in</h2>
+  {% if mini.usedIn.length %}
+  <ul class="list">
+    {% for u in mini.usedIn %}
+    <li><a href="{{ u.lesson.url }}">{{ u.lesson.unit.yearLabel }} · {{ u.lesson.unit.title }} · Lesson {{ u.lesson.number }}</a>
+      <p class="muted">{{ text(u.thisWeek) }}</p></li>
+    {% endfor %}
+  </ul>
+  {% else %}<p class="muted">Not used in a lesson yet.</p>{% endif %}
+</section>
+
+{% if mini.curriculum.length %}<section><h2>Curriculum</h2>{{ codes(mini.curriculum) }}</section>{% endif %}

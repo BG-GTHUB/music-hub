@@ -1,0 +1,53 @@
+---
+layout: base.njk
+nav: units
+pagination:
+  data: site.lessons
+  size: 1
+  alias: lesson
+permalink: "{{ lesson.url }}"
+eleventyComputed:
+  title: "{{ lesson.title }}"
+---
+{% from "macros.njk" import lisc, codes, resources, reflectionList, text %}
+<header class="page-head">
+  <p class="eyebrow"><a href="{{ lesson.unit.url }}">{{ lesson.unit.title }}</a> · {{ lesson.unit.yearLabel }} · Lesson {{ lesson.number }} of {{ lesson.unit.lessonCount }} · Week {{ lesson.week }}</p>
+  <h1>{{ lesson.title }}{% if lesson.status == "draft" %} <span class="pill">Draft</span>{% endif %}</h1>
+  {% if lesson.summary %}<p class="focus">{{ text(lesson.summary) }}</p>{% endif %}
+</header>
+
+{% if lesson.lisc %}{{ lisc(lesson.lisc) }}{% endif %}
+
+<section>
+  <h2>Lesson sequence
+    <span class="muted small">{% if lesson.totalMinutes %}{{ lesson.totalMinutes }} of {{ site.lessonMinutes }} min{% else %}{{ site.lessonMinutes }} min lesson, times to add{% endif %}</span>
+  </h2>
+  <ol class="sequence">
+    {% for p in lesson.parts %}
+    <li class="card">
+      <div class="seq-head">
+        <h3>{% if p.info.url %}<a href="{{ p.info.url }}">{{ p.info.title }}</a>{% else %}{{ p.info.title }}{% endif %}</h3>
+        <span class="time">{{ text(p.time) }}</span>
+      </div>
+      {% if p.info.kind %}<p class="meta">{{ p.info.kind }}</p>{% endif %}
+      {% if p.this_week %}<p>{{ text(p.this_week) }}</p>{% endif %}
+      {% if p.info.resources.length %}<details><summary>Resources</summary>{{ resources(p.info.resources) }}</details>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+
+{% if lesson.body %}<section><h2>Notes</h2><div class="prose">{{ lesson.body | md | safe }}</div></section>{% endif %}
+
+{% if lesson.vocab.length %}
+<section><h2>Music words</h2><ul class="chips">{% for v in lesson.vocab %}<li><span class="chip plain">{{ v }}</span></li>{% endfor %}</ul></section>
+{% endif %}
+
+{% if lesson.resources.length %}<section><h2>Resources</h2>{{ resources(lesson.resources) }}</section>{% endif %}
+
+{% if lesson.curriculum.length %}<section><h2>Curriculum</h2>{{ codes(lesson.curriculum) }}</section>{% endif %}
+
+<section>
+  <h2>Reflections</h2>
+  {{ reflectionList(lesson.reflections) }}
+</section>

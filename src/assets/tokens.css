@@ -1,0 +1,55 @@
+/* All colours, fonts and radii. Never hard-code a colour anywhere else.
+   Placeholder design until Bill chooses one. */
+:root {
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --radius-card: 14px;
+  --radius-input: 10px;
+
+  --bg: #f7f5f0;
+  --card: #ffffff;
+  --hover: #efece5;
+  --border: #e2ded5;
+  --text: #1d1b18;
+  --text-muted: #5e5a54;
+  --accent: #0e6b6b;          /* links, planned dots, buttons */
+  --accent-text: #ffffff;     /* text on --accent */
+  --accent-soft: #d8eeec;
+  --warm: #a85208;            /* next to plan, drafts, placeholders */
+  --warm-soft: #fbe9d5;
+  --empty: #d3cec4;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141517;
+    --card: #1e2023;
+    --hover: #26292d;
+    --border: #33363b;
+    --text: #eceae6;
+    --text-muted: #a9a59e;
+    --accent: #5cc4bf;
+    --accent-text: #0d1717;
+    --accent-soft: #1d3634;
+    --warm: #f0a35c;
+    --warm-soft: #3a2a1b;
+    --empty: #44474c;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #141517;
+  --card: #1e2023;
+  --hover: #26292d;
+  --border: #33363b;
+  --text: #eceae6;
+  --text-muted: #a9a59e;
+  --accent: #5cc4bf;
+  --accent-text: #0d1717;
+  --accent-soft: #1d3634;
+  --warm: #f0a35c;
+  --warm-soft: #3a2a1b;
+  --empty: #44474c;
+  color-scheme: dark;
+}
