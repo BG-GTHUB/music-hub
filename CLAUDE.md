@@ -128,7 +128,8 @@ Note about the class or the lesson. Never name a student.
 ## How the site works
 
 - **Generator:** Eleventy 3 with Nunjucks. Dependencies: `@11ty/eleventy`, `gray-matter`, `js-yaml`, `markdown-it`. All content is loaded and every derived value is computed in one place, `src/_data/site.js`; templates only render.
-- **Path prefix** is `/music-hub/` (assumes the GitHub repo is called `music-hub`; change `pathPrefix` in `eleventy.config.js` if not). The HTML base plugin rewrites links, so templates write links as `/units/...`.
+- **Hosting:** repo `BG-GTHUB/music-hub` (public), site at https://bg-gthub.github.io/music-hub/. Pages source is GitHub Actions (set up 2026-11-11). Commits use the GitHub noreply email (set in this repo's git config), never Bill's personal email.
+- **Path prefix** is `/music-hub/` to match the repo name (`pathPrefix` in `eleventy.config.js`). The HTML base plugin rewrites links, so templates write links as `/units/...`.
 - **Pages:** `/` Overview, `/units/` all units, `/units/<unit>/` unit, `/units/<unit>/<lesson file name>/` lesson, `/minis/` mini lesson library, `/minis/<slug>/` mini lesson.
 - **Overview** shows one card per year level group in Year 1 to Year 6 order: the current term's unit if there is one (one card per unit, so a shared Years 5 and 6 unit is one card), otherwise a dashed "[Unit to add]" card listing the classes. Draft units stay off the Overview.
 - **Current term** is the newest file in `content/terms/`. Its `starts` date (Monday of Week 1) lets the browser work out this week: the Overview shows "Week N" and the unit page highlights the lesson for this week. Add the term file when a new term starts.
