@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Chord Classroom Player</title>
+
+<style>
+
+body {
+    background: black;
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0 14px 14px;
+    padding-left: max(14px, env(safe-area-inset-left));
+    padding-right: max(14px, env(safe-area-inset-right));
+    -webkit-text-size-adjust: 100%;
+}
+
+h1 {
+    font-size: 26px;
+    margin: 12px 0;
+}
+
+textarea {
+    width: 100%;
+    height: 260px;
+    background: #111;
+    color: white;
+    border: 1px solid #444;
+    font-size: 20px;
+    padding: 16px;
+    box-sizing: border-box;
+    font-family: Menlo, Consolas, monospace;
+}
+
+.stickyBar {
+    position: sticky;
+    top: 0;
+    background: black;
+    z-index: 9999;
+    border-bottom: 1px solid #333;
+    padding: 8px 0 2px;
+}
+
+.barRow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+button {
+    color: white;
+    border-radius: 10px;
+    padding: 7px 12px;
+    font-size: 16px;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+button:focus-visible,
+input:focus-visible,
+summary:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
+}
+
+.audioButton { background: #12335c; border: 1px solid #2f6fb3; }
+.audioButton:hover { background: #18477d; }
+.audioButton.active { background: #2f6fb3; border-color: #8ec5ff; }
+
+.scrollButton { background: #1f4d2b; border: 1px solid #4c9c62; }
+.scrollButton:hover { background: #2b683b; }
+.scrollButton.active { background: #3f8a53; border-color: #9be7a8; }
+
+.mainButton { background: #222; border: 1px solid #555; }
+.mainButton:hover { background: #333; }
+
+.audioLabel { color: #8ec5ff; font-weight: bold; }
+.scrollLabel { color: #9be7a8; font-weight: bold; }
+.mainLabel { color: #ccc; font-weight: bold; }
+
+#timeDisplay {
+    min-width: 96px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+#seekBar {
+    flex: 1 1 160px;
+    max-width: 320px;
+    accent-color: #2f6fb3;
+}
+
+#fontSize { accent-color: #888; }
+
+#transposeLabel {
+    display: inline-block;
+    min-width: 32px;
+    text-align: center;
+}
+
+input[type="text"] {
+    background: #111;
+    color: white;
+    border: 1px solid #555;
+    padding: 10px;
+    font-size: 20px;
+    width: 320px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+details {
+    margin-top: 12px;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 10px 14px;
+}
+
+summary {
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ccc;
+}
+
+.setupRow {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#status {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    background: #1f4d2b;
+    border: 1px solid #4c9c62;
+    border-radius: 10px;
+    color: white;
+    padding: 10px 18px;
+    font-size: 18px;
+    z-index: 10000;
+}
+
+#status:empty { display: none; }
+
+.barRow[hidden] { display: none; }
+
+.syncButton { background: #5c3a12; border: 1px solid #b3772f; }
+.syncButton:hover { background: #7d5018; }
+.syncLabel { color: #ffb347; font-weight: bold; }
+
+#tapButton {
+    font-size: 22px;
+    padding: 12px 40px;
+    background: #b3772f;
+    border-color: #ffb347;
+}
+
+.line {
+    padding: 0 10px;
+    border-left: 6px solid transparent;
+    border-radius: 6px;
+}
+
+.line:empty::before { content: "\200b"; }
+
+.line.current {
+    background: #2a2a2a;
+    border-left-color: white;
+}
+
+.line.pending {
+    background: #3a2a10;
+    border-left-color: #ffb347;
+}
+
+#output.synced [data-cue] { cursor: pointer; }
+
+#audioName { color: #8ec5ff; }
+
+#output {
+    margin-top: 28px;
+    white-space: pre-wrap;
+    font-family: Menlo, Consolas, monospace;
+    font-size: 34px;
+    line-height: 1.8;
+    padding-bottom: 60vh;
+}
+
+#output:empty::before {
+    content: "Open Song setup, paste chords and press Convert.";
+    color: #666;
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+}
+
+.section {
+    color: #999;
+    font-weight: bold;
+}
+
+.songLink {
+    color: #66ccff;
+    cursor: pointer;
+    font-size: 20px;
+    background: none;
+    border: none;
+    padding: 0;
+    text-decoration: underline;
+}
+
+.songRow {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hint {
+    color: #777;
+    font-size: 14px;
+    margin-top: 14px;
+}
+
+.c { color: #ff0000; font-weight: bold; }
+.d { color: #ff9900; font-weight: bold; }
+.e { color: #ffff00; font-weight: bold; }
+.f { color: #99cc66; font-weight: bold; }
+.g { color: #00bbbb; font-weight: bold; }
+.a { color: #8a4dff; font-weight: bold; }
+.b { color: #cc00cc; font-weight: bold; }
+
+</style>
+</head>
+
+<body>
+
+<div class="stickyBar">
+
+    <div class="barRow">
+        <button class="audioButton" id="playButton" onclick="togglePlay()">Play</button>
+        <button class="audioButton" onclick="restartAudio()">Restart</button>
+        <button class="audioButton" onclick="seekBy(-10)">-10s</button>
+
+        <input type="range" id="seekBar" min="0" max="0" step="0.1" value="0" aria-label="Song position">
+
+        <span id="timeDisplay" class="audioLabel">0:00 / 0:00</span>
+
+        <span class="audioLabel">Tempo</span>
+        <span id="tempoButtons"></span>
+    </div>
+
+    <div class="barRow">
+        <button class="scrollButton" id="scrollToggle" onclick="toggleScroll()">Start Scroll</button>
+
+        <span class="scrollLabel">Scroll</span>
+        <span id="scrollButtons"></span>
+
+        <label class="scrollLabel">
+            <input type="checkbox" id="linkScroll" checked>
+            with audio
+        </label>
+    </div>
+
+    <div class="barRow">
+        <span class="mainLabel">Transpose</span>
+        <button class="mainButton" onclick="changeTranspose(-1)" aria-label="Transpose down">-</button>
+        <span id="transposeLabel" class="mainLabel">0</span>
+        <button class="mainButton" onclick="changeTranspose(1)" aria-label="Transpose up">+</button>
+        <button class="mainButton" onclick="changeTranspose(0)">Reset</button>
+
+        <label class="mainLabel" for="fontSize">Font</label>
+        <input type="range" id="fontSize" min="24" max="70" value="34" oninput="changeFontSize()">
+
+        <button class="mainButton" id="fullscreenButton" onclick="toggleFullscreen()">Fullscreen</button>
+
+        <button class="syncButton" onclick="startSync()">Sync Lyrics</button>
+        <button class="syncButton" id="clearSyncButton" onclick="clearSync()" hidden>Clear Sync</button>
+        <span id="syncInfo" class="syncLabel">Not synced</span>
+    </div>
+
+    <div class="barRow" id="syncRow" hidden>
+        <button class="syncButton" id="tapButton" onclick="tapSync()">TAP as each line starts (Space)</button>
+        <button class="syncButton" onclick="undoSync()">Undo (Backspace)</button>
+        <button class="syncButton" onclick="finishSync()">Finish (Esc)</button>
+        <span id="syncProgress" class="syncLabel"></span>
+    </div>
+
+</div>
+
+<details id="setup" open>
+
+    <summary>Song setup (click to show / hide)</summary>
+
+    <h1>Chord Classroom Player</h1>
+
+    <textarea id="input" placeholder="Paste Ultimate Guitar chords here..."></textarea>
+
+    <div class="setupRow">
+        <button class="mainButton" onclick="convertAndHide()">Convert</button>
+    </div>
+
+    <div class="setupRow">
+        <label for="audioInput">Load Audio</label>
+        <input type="file" id="audioInput" accept="audio/*">
+        <span id="audioName"></span>
+    </div>
+
+    <div class="setupRow">
+        <input type="text" id="songName" placeholder="Song name">
+        <button class="mainButton" onclick="saveSong()">Save Song</button>
+    </div>
+
+    <h2>Saved Songs</h2>
+
+    <div id="songList"></div>
+
+    <div class="hint">
+        Shortcuts: Space = play / pause, S = scroll on / off, Left / Right = back / forward 5s, F = fullscreen.
+        Saving a song also saves its audio, lyric sync, key, tempo, scroll speed and font size on this computer.
+        Sync Lyrics: load the audio, press Sync Lyrics, then tap Space as each highlighted line starts.
+        Once synced, click any line to jump the audio there.
+    </div>
+
+</details>
+
+<div id="output"></div>
+
+<div id="status" role="status"></div>
+
+<audio id="audioPlayer" playsinline webkit-playsinline></audio>
+
+<script>
+
+// ---- Chord logic ----
+
+const SHARPS = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const FLATS  = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+const ODD_NOTES = { "Cb": 11, "B#": 0, "E#": 5, "Fb": 4 };
+
+// Root, quality/extensions (m7, maj7, 7sus4, m7b5, add9, (maj7)...), optional /bass
+const CHORD_RE = /^([A-G][#b]?)((?:maj|min|m|M|sus|dim|aug|add|\+|-)?[0-9]*(?:(?:sus|add|maj|M|b|#|\+|-|no)[0-9]*)*(?:\([^)]*\))?)(?:\/([A-G][#b]?))?$/;
+
+// Things that sit on chord lines without being chords: | / - x2 (x2) 2x N.C. % *
+const FILLER_RE = /^(\|+|\/|-+|\(?x\d+\)?|\(?\d+x\)?|N\.?C\.?|%|\*+|\.+)$/i;
+
+function escapeHtml(text) {
+    return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+}
+
+function parseChord(token) {
+    let m = CHORD_RE.exec(token);
+
+    if (m) return { pre: "", root: m[1], rest: m[2], bass: m[3] || "", post: "" };
+
+    // Allow wrapping punctuation, e.g. (Am) or G,
+    let pre = token.startsWith("(") ? "(" : "";
+    let core = token.slice(pre.length);
+    let post = (core.match(/[),]+$/) || [""])[0];
+
+    core = core.slice(0, core.length - post.length);
+
+    if (!pre && !post) return null;
+
+    m = CHORD_RE.exec(core);
+
+    if (!m) return null;
+
+    return { pre: pre, root: m[1], rest: m[2], bass: m[3] || "", post: post };
+}
+
+function isChordLine(line) {
+    let words = line.trim().split(/\s+/);
+    let chords = 0;
+
+    if (words[0] === "") return false;
+
+    for (let word of words) {
+        if (parseChord(word)) chords++;
+        else if (!FILLER_RE.test(word)) return false;
+    }
+
+    return chords > 0;
+}
+
+function shiftNote(note, semitones, preferFlat) {
+    if (semitones === 0) return note;
+
+    let index = SHARPS.indexOf(note);
+
+    if (index < 0) index = FLATS.indexOf(note);
+    if (index < 0) index = ODD_NOTES[note];
+
+    return (preferFlat ? FLATS : SHARPS)[(index + semitones + 120) % 12];
+}
+
+// Rebuilds a chord line, keeping each chord at its original column where it fits
+function renderChordLine(line, semitones, preferFlat) {
+    let html = "";
+    let length = 0;
+    let tokens = /\S+/g;
+    let match;
+
+    while ((match = tokens.exec(line))) {
+        let pad = Math.max(match.index - length, length > 0 ? 1 : 0);
+
+        html += " ".repeat(pad);
+        length += pad;
+
+        let chord = parseChord(match[0]);
+
+        if (chord) {
+            let root = shiftNote(chord.root, semitones, preferFlat);
+            let name = root + chord.rest;
+
+            if (chord.bass) name += "/" + shiftNote(chord.bass, semitones, preferFlat);
+
+            html += escapeHtml(chord.pre) +
+                '<span class="' + root.charAt(0).toLowerCase() + '">' + escapeHtml(name) + "</span>" +
+                escapeHtml(chord.post);
+
+            length += chord.pre.length + name.length + chord.post.length;
+        } else {
+            html += escapeHtml(match[0]);
+            length += match[0].length;
+        }
+    }
+
+    return html;
+}
+
+function songPrefersFlats(lines) {
+    let flats = 0;
+    let sharps = 0;
+
+    lines.forEach(function(line) {
+        if (!isChordLine(line)) return;
+
+        line.trim().split(/\s+/).forEach(function(word) {
+            let chord = parseChord(word);
+
+            if (!chord) return;
+            if (chord.root.endsWith("b")) flats++;
+            if (chord.root.endsWith("#")) sharps++;
+        });
+    });
+
+    return flats > sharps;
+}
+
+// Builds the song as one <div> per line. Lines are grouped into "cues" for
+// lyric sync: a lyric line, plus the chord line directly above it if there is one.
+function buildSong(text, semitones) {
+    let lines = text.replaceAll("\r", "").replaceAll("\t", "    ").split("\n");
+    let preferFlat = songPrefersFlats(lines);
+
+    let types = lines.map(function(line) {
+        if (line.trim() === "") return "blank";
+        if (/^\s*\[[^\]]*\]\s*$/.test(line)) return "section";
+        if (isChordLine(line)) return "chord";
+        return "lyric";
+    });
+
+    let lineCue = lines.map(function() { return -1; });
+    let cueCount = 0;
+
+    for (let i = 0; i < lines.length; i++) {
+        if (types[i] === "chord" && types[i + 1] === "lyric") {
+            lineCue[i] = lineCue[i + 1] = cueCount++;
+            i++;
+        } else if (types[i] === "chord" || types[i] === "lyric") {
+            lineCue[i] = cueCount++;
+        }
+    }
+
+    let html = lines.map(function(line, i) {
+        let body = types[i] === "chord"
+            ? renderChordLine(line, semitones, preferFlat)
+            : escapeHtml(line);
+
+        return '<div class="line' + (types[i] === "section" ? " section" : "") + '"' +
+            (lineCue[i] >= 0 ? ' data-cue="' + lineCue[i] + '"' : "") +
+            ">" + body + "</div>";
+    }).join("");
+
+    return { html: html, cueCount: cueCount };
+}
+
+// ---- UI ----
+
+const TEMPOS = [0.6, 0.7, 0.8, 0.85, 0.9, 0.95, 1.0];
+const SCROLLS = [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6];
+const SCROLL_PIXELS_PER_SECOND = 33;
+
+const audioPlayer = document.getElementById("audioPlayer");
+const seekBar = document.getElementById("seekBar");
+
+let currentPlaybackSpeed = 1.0;
+let currentScrollSpeed = 0.8;
+let currentTranspose = 0;
+
+let audioFile = null;
+let audioUrl = null;
+
+let scrolling = false;
+let scrollPosition = 0;
+let lastFrame = 0;
+let seeking = false;
+
+// Lyric sync: syncTimes[n] is the audio time (seconds) when cue n starts
+const FOLLOW_LEAD = 0.3;
+
+let syncTimes = [];
+let cueCount = 0;
+let currentCue = -1;
+let syncing = false;
+let syncIndex = 0;
+
+function percentage(value) {
+    return Math.round(value * 100) + "%";
+}
+
+function byId(id) {
+    return document.getElementById(id);
+}
+
+function showStatus(message) {
+    byId("status").innerText = message;
+
+    clearTimeout(showStatus.timer);
+    showStatus.timer = setTimeout(function() {
+        byId("status").innerText = "";
+    }, 4000);
+}
+
+function buildSpeedButtons(containerId, className, speeds, handler) {
+    let container = byId(containerId);
+
+    speeds.forEach(function(speed) {
+        let button = document.createElement("button");
+
+        button.className = className;
+        button.innerText = percentage(speed);
+        button.dataset.speed = speed;
+        button.onclick = function() { handler(speed); };
+
+        container.appendChild(button);
+        container.appendChild(document.createTextNode(" "));
+    });
+}
+
+function markActive(containerId, speed) {
+    byId(containerId).querySelectorAll("button").forEach(function(button) {
+        button.classList.toggle("active", Number(button.dataset.speed) === speed);
+    });
+}
+
+// ---- Display ----
+
+function convert() {
+    let text = byId("input").value;
+
+    if (text.trim() === "") {
+        byId("output").innerHTML = "";
+        cueCount = 0;
+    } else {
+        let song = buildSong(text, currentTranspose);
+
+        byId("output").innerHTML = song.html;
+        cueCount = song.cueCount;
+    }
+
+    currentCue = -1;
+    updateSyncInfo();
+
+    if (syncing) highlight("pending", syncIndex, false);
+    else updateFollow();
+}
+
+function convertAndHide() {
+    convert();
+
+    if (byId("input").value.trim() !== "") {
+        byId("setup").open = false;
+        window.scrollTo(0, 0);
+    }
+}
+
+function changeTranspose(step) {
+    currentTranspose = step === 0 ? 0 : currentTranspose + step;
+
+    if (currentTranspose > 11 || currentTranspose < -11) currentTranspose = 0;
+
+    byId("transposeLabel").innerText =
+        (currentTranspose > 0 ? "+" : "") + currentTranspose;
+
+    convert();
+}
+
+function toggleFullscreen() {
+    if (!document.documentElement.requestFullscreen) return;
+
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+function changeFontSize() {
+    byId("output").style.fontSize = byId("fontSize").value + "px";
+}
+
+// ---- Scrolling ----
+
+function setScrollSpeed(speed) {
+    currentScrollSpeed = speed;
+    markActive("scrollButtons", speed);
+}
+
+function scrollFrame(now) {
+    if (!scrolling) return;
+
+    let elapsed = Math.min((now - lastFrame) / 1000, 0.1);
+
+    lastFrame = now;
+
+    // If someone scrolled by hand, carry on from where they left it
+    if (Math.abs(window.scrollY - scrollPosition) > 2) {
+        scrollPosition = window.scrollY;
+    }
+
+    let speed = currentScrollSpeed * SCROLL_PIXELS_PER_SECOND;
+
+    if (byId("linkScroll").checked && !audioPlayer.paused) {
+        speed *= currentPlaybackSpeed;
+    }
+
+    scrollPosition += speed * elapsed;
+    window.scrollTo(0, scrollPosition);
+
+    let bottom = document.documentElement.scrollHeight - window.innerHeight;
+
+    if (scrollPosition >= bottom) {
+        stopScroll();
+        return;
+    }
+
+    requestAnimationFrame(scrollFrame);
+}
+
+function startScroll() {
+    if (scrolling) return;
+
+    scrolling = true;
+    scrollPosition = window.scrollY;
+    lastFrame = performance.now();
+    byId("scrollToggle").innerText = "Stop Scroll";
+
+    requestAnimationFrame(scrollFrame);
+}
+
+function stopScroll() {
+    scrolling = false;
+    byId("scrollToggle").innerText = "Start Scroll";
+}
+
+function toggleScroll() {
+    if (scrolling) stopScroll();
+    else startScroll();
+}
+
+// ---- Lyric sync ----
+
+function hasSync() {
+    return syncTimes.some(function(time) { return typeof time === "number"; });
+}
+
+function updateSyncInfo() {
+    let info = "Not synced";
+
+    if (syncing) info = "Syncing...";
+    else if (hasSync() && syncTimes.length !== cueCount) info = "Synced (lyrics changed - check)";
+    else if (hasSync()) info = "Synced \u2713";
+
+    byId("syncInfo").innerText = info;
+    byId("clearSyncButton").hidden = !hasSync() || syncing;
+    byId("output").classList.toggle("synced", hasSync());
+    byId("syncProgress").innerText =
+        "Line " + Math.min(syncIndex + 1, cueCount) + " of " + cueCount;
+}
+
+function scrollToLine(element) {
+    let bar = document.querySelector(".stickyBar").offsetHeight;
+    let top = element.getBoundingClientRect().top + window.scrollY -
+        bar - (window.innerHeight - bar) * 0.3;
+
+    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+}
+
+function highlight(className, cue, scroll) {
+    let output = byId("output");
+
+    output.querySelectorAll("." + className).forEach(function(element) {
+        element.classList.remove(className);
+    });
+
+    if (cue < 0) return;
+
+    let elements = output.querySelectorAll('[data-cue="' + cue + '"]');
+
+    elements.forEach(function(element) {
+        element.classList.add(className);
+    });
+
+    if (scroll && elements.length) scrollToLine(elements[0]);
+}
+
+function cueAt(time) {
+    let found = -1;
+    let count = Math.min(syncTimes.length, cueCount);
+
+    for (let i = 0; i < count; i++) {
+        if (typeof syncTimes[i] === "number" && syncTimes[i] <= time) found = i;
+    }
+
+    return found;
+}
+
+// Highlights (and scrolls to) the line the audio has reached
+function updateFollow() {
+    if (syncing || !hasSync() || !hasAudio()) return;
+
+    let cue = cueAt(audioPlayer.currentTime + FOLLOW_LEAD);
+
+    if (cue === currentCue) return;
+
+    currentCue = cue;
+    highlight("current", cue, byId("linkScroll").checked);
+}
+
+function followFrame() {
+    if (audioPlayer.paused) return;
+
+    updateFollow();
+    requestAnimationFrame(followFrame);
+}
+
+function startSync() {
+    if (syncing) return;
+
+    if (!hasAudio()) {
+        showStatus("Load an audio file first.");
+        byId("setup").open = true;
+        return;
+    }
+
+    if (cueCount === 0) {
+        showStatus("Paste the chords and press Convert first.");
+        byId("setup").open = true;
+        return;
+    }
+
+    stopScroll();
+
+    syncing = true;
+    syncIndex = 0;
+    syncTimes.length = cueCount;
+
+    for (let i = 0; i < cueCount; i++) {
+        if (typeof syncTimes[i] !== "number") syncTimes[i] = null;
+    }
+
+    byId("setup").open = false;
+    byId("syncRow").hidden = false;
+
+    highlight("current", -1, false);
+    highlight("pending", 0, true);
+    updateSyncInfo();
+
+    audioPlayer.currentTime = 0;
+    audioPlayer.play();
+}
+
+function tapSync() {
+    if (!syncing) return;
+
+    syncTimes[syncIndex] = Math.round(audioPlayer.currentTime * 100) / 100;
+
+    highlight("current", syncIndex, false);
+    syncIndex++;
+
+    if (syncIndex >= cueCount) {
+        finishSync();
+        return;
+    }
+
+    highlight("pending", syncIndex, true);
+    updateSyncInfo();
+}
+
+// Steps back one line and replays the couple of seconds before it
+function rewindSyncTo(cue) {
+    let from = 0;
+
+    for (let i = 0; i < cue; i++) {
+        if (typeof syncTimes[i] === "number") from = syncTimes[i];
+    }
+
+    syncIndex = cue;
+    audioPlayer.currentTime = Math.max(0, from - 2);
+    audioPlayer.play();
+
+    highlight("current", cue - 1, false);
+    highlight("pending", cue, true);
+    updateSyncInfo();
+}
+
+function undoSync() {
+    if (!syncing || syncIndex === 0) return;
+
+    rewindSyncTo(syncIndex - 1);
+}
+
+function finishSync() {
+    if (!syncing) return;
+
+    syncing = false;
+    byId("syncRow").hidden = true;
+    audioPlayer.pause();
+
+    highlight("pending", -1, false);
+    currentCue = -1;
+    updateSyncInfo();
+    updateFollow();
+
+    let name = byId("songName").value.trim();
+
+    if (name && localStorage.getItem("song_" + name) !== null && persistMeta(name)) {
+        showStatus("Sync saved with \"" + name + "\".");
+    } else {
+        showStatus("Sync done. Press Save Song to keep it.");
+        byId("setup").open = true;
+    }
+}
+
+function clearSync() {
+    if (!confirm("Remove the lyric sync for this song?")) return;
+
+    syncTimes = [];
+    currentCue = -1;
+    highlight("current", -1, false);
+    updateSyncInfo();
+
+    let name = byId("songName").value.trim();
+
+    if (name && localStorage.getItem("song_" + name) !== null) persistMeta(name);
+}
+
+byId("output").addEventListener("click", function(event) {
+    let line = event.target.closest("[data-cue]");
+
+    if (!line) return;
+
+    let cue = Number(line.dataset.cue);
+
+    if (syncing) {
+        // Re-sync from this line onwards
+        rewindSyncTo(cue);
+    } else if (hasAudio() && typeof syncTimes[cue] === "number") {
+        audioPlayer.currentTime = syncTimes[cue];
+        updateFollow();
+    }
+});
+
+// ---- Audio ----
+
+function hasAudio() {
+    return audioUrl !== null;
+}
+
+function formatTime(value) {
+    if (!isFinite(value)) value = 0;
+
+    let total = Math.floor(value);
+    let seconds = total % 60;
+
+    return Math.floor(total / 60) + ":" + (seconds < 10 ? "0" : "") + seconds;
+}
+
+function updateTime() {
+    byId("timeDisplay").innerText =
+        formatTime(audioPlayer.currentTime) + " / " + formatTime(audioPlayer.duration);
+
+    if (!seeking) seekBar.value = audioPlayer.currentTime;
+}
+
+function setAudio(file, name) {
+    clearAudio();
+
+    audioFile = file;
+    audioUrl = URL.createObjectURL(file);
+    audioPlayer.src = audioUrl;
+    audioPlayer.playbackRate = currentPlaybackSpeed;
+
+    byId("audioName").innerText = name ? "Loaded: " + name : "";
+}
+
+function clearAudio() {
+    audioPlayer.pause();
+
+    if (audioUrl) URL.revokeObjectURL(audioUrl);
+
+    audioFile = null;
+    audioUrl = null;
+    audioPlayer.removeAttribute("src");
+    audioPlayer.load();
+
+    seekBar.max = 0;
+    byId("audioName").innerText = "";
+    byId("audioInput").value = "";
+    updateTime();
+}
+
+function setPlaybackSpeed(speed) {
+    currentPlaybackSpeed = speed;
+    audioPlayer.playbackRate = speed;
+    markActive("tempoButtons", speed);
+}
+
+function togglePlay() {
+    if (!hasAudio()) {
+        showStatus("Load an audio file first.");
+        byId("setup").open = true;
+        return;
+    }
+
+    if (audioPlayer.paused) audioPlayer.play();
+    else audioPlayer.pause();
+}
+
+function restartAudio() {
+    window.scrollTo(0, 0);
+    scrollPosition = 0;
+
+    if (hasAudio()) {
+        audioPlayer.currentTime = 0;
+        audioPlayer.play();
+    }
+}
+
+function seekBy(seconds) {
+    if (!hasAudio()) return;
+
+    audioPlayer.currentTime = Math.max(0, audioPlayer.currentTime + seconds);
+}
+
+audioPlayer.addEventListener("timeupdate", function() {
+    updateTime();
+    updateFollow();
+});
+
+audioPlayer.addEventListener("seeked", updateFollow);
+
+audioPlayer.addEventListener("ended", finishSync);
+
+audioPlayer.addEventListener("loadedmetadata", function() {
+    seekBar.max = audioPlayer.duration || 0;
+    // Browsers reset playbackRate when a new file loads
+    audioPlayer.playbackRate = currentPlaybackSpeed;
+    updateTime();
+});
+
+audioPlayer.addEventListener("play", function() {
+    byId("playButton").innerText = "Pause";
+
+    // Synced songs follow the audio line by line instead of scrolling at a set speed
+    if (byId("linkScroll").checked && !syncing && !hasSync()) startScroll();
+
+    requestAnimationFrame(followFrame);
+});
+
+audioPlayer.addEventListener("pause", function() {
+    byId("playButton").innerText = "Play";
+
+    if (byId("linkScroll").checked) stopScroll();
+});
+
+seekBar.addEventListener("input", function() {
+    seeking = true;
+});
+
+seekBar.addEventListener("change", function() {
+    if (hasAudio()) audioPlayer.currentTime = Number(seekBar.value);
+
+    seeking = false;
+});
+
+byId("audioInput").addEventListener("change", function(event) {
+    let file = event.target.files[0];
+
+    if (!file) return;
+
+    setAudio(file, file.name);
+});
+
+// ---- Saved audio (IndexedDB, because audio is too big for localStorage) ----
+
+function openDatabase() {
+    return new Promise(function(resolve, reject) {
+        let request = indexedDB.open("chordClassroom", 1);
+
+        request.onupgradeneeded = function() {
+            request.result.createObjectStore("audio");
+        };
+        request.onsuccess = function() { resolve(request.result); };
+        request.onerror = function() { reject(request.error); };
+    });
+}
+
+async function audioStore(mode, action) {
+    let database = await openDatabase();
+
+    return new Promise(function(resolve, reject) {
+        let transaction = database.transaction("audio", mode);
+        let request = action(transaction.objectStore("audio"));
+
+        transaction.oncomplete = function() { resolve(request.result); };
+        transaction.onerror = function() { reject(transaction.error); };
+        transaction.onabort = function() { reject(transaction.error); };
+    });
+}
+
+// ---- Saved songs ----
+
+function persistMeta(name) {
+    try {
+        localStorage.setItem("songmeta_" + name, JSON.stringify({
+            transpose: currentTranspose,
+            tempo: currentPlaybackSpeed,
+            scroll: currentScrollSpeed,
+            fontSize: byId("fontSize").value,
+            sync: syncTimes
+        }));
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+async function saveSong() {
+    let name = byId("songName").value.trim();
+
+    if (!name) {
+        showStatus("Type a song name first.");
+        return;
+    }
+
+    let saved = false;
+
+    try {
+        localStorage.setItem("song_" + name, byId("input").value);
+        saved = persistMeta(name);
+    } catch (error) {
+        saved = false;
+    }
+
+    if (!saved) {
+        showStatus("Could not save: browser storage is full or blocked.");
+        return;
+    }
+
+    let message = "Saved \"" + name + "\"";
+
+    if (audioFile) {
+        let file = audioFile;
+
+        try {
+            await audioStore("readwrite", function(store) {
+                return store.put({ blob: file, name: file.name || "" }, name);
+            });
+            message += " with audio";
+        } catch (error) {
+            message += " (audio could not be saved in this browser)";
+        }
+    }
+
+    showStatus(message);
+    loadSongs();
+}
+
+async function openSong(name) {
+    if (syncing) {
+        syncing = false;
+        byId("syncRow").hidden = true;
+    }
+
+    byId("input").value = localStorage.getItem("song_" + name) || "";
+    byId("songName").value = name;
+
+    let meta = {};
+
+    try {
+        meta = JSON.parse(localStorage.getItem("songmeta_" + name)) || {};
+    } catch (error) {
+        meta = {};
+    }
+
+    currentTranspose = Number(meta.transpose) || 0;
+    syncTimes = Array.isArray(meta.sync) ? meta.sync : [];
+
+    byId("transposeLabel").innerText =
+        (currentTranspose > 0 ? "+" : "") + currentTranspose;
+
+    setPlaybackSpeed(Number(meta.tempo) || 1.0);
+    setScrollSpeed(Number(meta.scroll) || 0.8);
+
+    if (meta.fontSize) {
+        byId("fontSize").value = meta.fontSize;
+        changeFontSize();
+    }
+
+    stopScroll();
+    clearAudio();
+    convertAndHide();
+
+    try {
+        let saved = await audioStore("readonly", function(store) {
+            return store.get(name);
+        });
+
+        if (saved && saved.blob) setAudio(saved.blob, saved.name);
+    } catch (error) {
+        // No saved audio available; the song still works without it
+    }
+}
+
+function deleteSong(name) {
+    if (!confirm("Delete \"" + name + "\"?")) return;
+
+    localStorage.removeItem("song_" + name);
+    localStorage.removeItem("songmeta_" + name);
+
+    audioStore("readwrite", function(store) {
+        return store.delete(name);
+    }).catch(function() {});
+
+    loadSongs();
+}
+
+function loadSongs() {
+    let songList = byId("songList");
+    let names = [];
+
+    songList.innerHTML = "";
+
+    for (let i = 0; i < localStorage.length; i++) {
+        let key = localStorage.key(i);
+
+        if (key.startsWith("song_")) names.push(key.slice(5));
+    }
+
+    names.sort(function(a, b) {
+        return a.localeCompare(b, undefined, { sensitivity: "base" });
+    });
+
+    names.forEach(function(name) {
+        let row = document.createElement("div");
+        row.className = "songRow";
+
+        let link = document.createElement("button");
+        link.className = "songLink";
+        link.innerText = name;
+        link.onclick = function() { openSong(name); };
+
+        let deleteButton = document.createElement("button");
+        deleteButton.className = "mainButton";
+        deleteButton.innerText = "Delete";
+        deleteButton.onclick = function() { deleteSong(name); };
+
+        row.appendChild(link);
+        row.appendChild(deleteButton);
+        songList.appendChild(row);
+    });
+}
+
+// ---- Keyboard shortcuts ----
+
+document.addEventListener("keydown", function(event) {
+    let tag = event.target.tagName;
+    let typing = tag === "TEXTAREA" ||
+        (tag === "INPUT" && event.target.type === "text");
+
+    if (typing || event.ctrlKey || event.metaKey || event.altKey) return;
+
+    // Stop Space / Enter from also "clicking" whichever button was used last
+    if ((event.key === " " || (syncing && event.key === "Enter")) &&
+        document.activeElement && document.activeElement.tagName === "BUTTON") {
+        document.activeElement.blur();
+        event.preventDefault();
+    }
+
+    if (syncing) {
+        if (event.key === " " || event.key === "Enter") {
+            event.preventDefault();
+            if (!event.repeat) tapSync();
+        } else if (event.key === "Backspace") {
+            event.preventDefault();
+            undoSync();
+        } else if (event.key === "Escape") {
+            finishSync();
+        }
+
+        return;
+    }
+
+    if (event.key === " ") {
+        event.preventDefault();
+
+        if (hasAudio()) togglePlay();
+        else toggleScroll();
+    } else if (event.key === "s" || event.key === "S") {
+        toggleScroll();
+    } else if (event.key === "f" || event.key === "F") {
+        toggleFullscreen();
+    } else if (event.key === "ArrowLeft" && tag !== "INPUT") {
+        seekBy(-5);
+    } else if (event.key === "ArrowRight" && tag !== "INPUT") {
+        seekBy(5);
+    }
+});
+
+// ---- Start up ----
+
+buildSpeedButtons("tempoButtons", "audioButton", TEMPOS, setPlaybackSpeed);
+buildSpeedButtons("scrollButtons", "scrollButton", SCROLLS, setScrollSpeed);
+
+// iPhone and the iPad app have no browser fullscreen, so hide the button there
+if (!document.documentElement.requestFullscreen) byId("fullscreenButton").hidden = true;
+
+setPlaybackSpeed(currentPlaybackSpeed);
+setScrollSpeed(currentScrollSpeed);
+loadSongs();
+
+</script>
+
+</body>
+</html>

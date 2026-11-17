@@ -11,6 +11,8 @@ export default function (eleventyConfig) {
   eleventyConfig.setNunjucksEnvironmentOptions({ autoescape: true });
   eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
   eleventyConfig.addPassthroughCopy({ "src/robots.txt": "robots.txt" });
+  // The Chord Classroom Player is one self-contained HTML file.
+  eleventyConfig.addPassthroughCopy({ "tools/chord-classroom/chord-converter.html": "tools/chord-classroom/index.html" });
   eleventyConfig.addWatchTarget("content/");
 
   eleventyConfig.addFilter("vc2Url", vc2Url);

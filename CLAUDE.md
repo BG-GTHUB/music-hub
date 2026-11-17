@@ -130,7 +130,7 @@ Note about the class or the lesson. Never name a student.
 - **Generator:** Eleventy 3 with Nunjucks. Dependencies: `@11ty/eleventy`, `gray-matter`, `js-yaml`, `markdown-it`. All content is loaded and every derived value is computed in one place, `src/_data/site.js`; templates only render.
 - **Hosting:** repo `BG-GTHUB/music-hub` (public), site at https://bg-gthub.github.io/music-hub/. Pages source is GitHub Actions (set up 2026-11-11). Commits use the GitHub noreply email (set in this repo's git config), never Bill's personal email.
 - **Path prefix** is `/music-hub/` to match the repo name (`pathPrefix` in `eleventy.config.js`). The HTML base plugin rewrites links, so templates write links as `/units/...`.
-- **Pages:** `/` Overview, `/units/` all units, `/units/<unit>/` unit, `/units/<unit>/<lesson file name>/` lesson, `/minis/` mini lesson library, `/minis/<slug>/` mini lesson.
+- **Pages:** `/` Overview, `/units/` all units, `/units/<unit>/` unit, `/units/<unit>/<lesson file name>/` lesson, `/minis/` mini lesson library, `/minis/<slug>/` mini lesson, `/tools/chord-classroom/` Chord Classroom Player (copied as is from `tools/chord-classroom/chord-converter.html`; linked from the top bar).
 - **Overview** shows one card per year level group in Year 1 to Year 6 order: the current term's unit if there is one (one card per unit, so a shared Years 5 and 6 unit is one card), otherwise a dashed "[Unit to add]" card listing the classes. Draft units stay off the Overview.
 - **Current term** is the newest file in `content/terms/`. Its `starts` date (Monday of Week 1) lets the browser work out this week: the Overview shows "Week N" and the unit page highlights the lesson for this week. Add the term file when a new term starts.
 - **Lesson week** is `start_week + number - 1`.
@@ -164,9 +164,10 @@ src/units.njk, unit.njk, lesson.njk, minis.njk, mini.njk
 src/assets/                # tokens.css, site.css, theme.js, site.js
 .github/workflows/deploy.yml  # builds and publishes to GitHub Pages on every push to main
 content/                   # all teaching content
+tools/chord-classroom/     # Chord Classroom Player: one self-contained HTML file, iPad app wrapper, README with decisions
 ```
 
-Bill keeps all planning in one private Claude Doc, "Music Private Notes": https://claude.ai/artifact/7FbxEdiE1YjZwHMVCQ4fgB. It holds the to-do list, ideas (such as Bill's Blitz), music room purchases and class notes. When Bill asks to add to or see the list, use that doc. Never copy it into the repo.
+Bill keeps the to-do list, ideas, purchases and class notes in a plain text file on the Mac Desktop, `~/Desktop/Music To-Do List.txt` (outside the repo; opens in TextEdit). That is the main list: when Bill asks to see or add to the list, use that file. An earlier copy is in a private Claude Doc, "Music Private Notes": https://claude.ai/artifact/7FbxEdiE1YjZwHMVCQ4fgB. It holds the to-do list, ideas (such as Bill's Blitz), music room purchases and class notes. Never copy either into the repo.
 
 ## Still to decide
 
