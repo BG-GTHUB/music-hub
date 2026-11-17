@@ -164,7 +164,10 @@ src/units.njk, unit.njk, lesson.njk, minis.njk, mini.njk
 src/assets/                # tokens.css, site.css, theme.js, site.js
 .github/workflows/deploy.yml  # builds and publishes to GitHub Pages on every push to main
 content/                   # all teaching content
+planning/                  # Bill's to-do list (todo.md) and ideas (ideas.md); in the repo but not on the site
 ```
+
+Bill keeps private notes (class notes, ideas not ready to be public) in a private Claude Doc, "Music Private Notes": https://claude.ai/artifact/7FbxEdiE1YjZwHMVCQ4fgB. Never copy them into the repo.
 
 ## Still to decide
 
