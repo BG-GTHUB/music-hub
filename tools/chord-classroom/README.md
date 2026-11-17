@@ -3,7 +3,7 @@
 Puts chords and lyrics on the classroom screen and plays along with a backing track. Bill started it in ChatGPT and carried on with Claude in a Chat tab conversation ("Lyrics-to-audio sync tool"). These notes come from that chat's handover.
 
 - `chord-converter.html`: the whole player in one file (HTML, CSS, JavaScript, no libraries, no network requests). The site publishes it at https://bg-gthub.github.io/music-hub/tools/chord-classroom/. It also works by double-clicking the file.
-- `ios/ContentView.swift`: a SwiftUI wrapper that shows the same HTML in a `WKWebView`, so it runs as an iPad or iPhone app built in Xcode.
+- `ios/`: an Xcode project (`ChordClassroom.xcodeproj`) that shows the same HTML in a `WKWebView`, so it runs as an iPad or iPhone app. `ChordClassroom/ContentView.swift` is the wrapper; the icon is in `Assets.xcassets`.
 
 ## Privacy and copyright
 
@@ -36,12 +36,14 @@ Songs, audio and lyric sync are saved only in the browser (or the app) on the de
 
 ## Building the iPad or iPhone app
 
-1. In Xcode, make a new iOS App: name `ChordClassroom`, interface SwiftUI, language Swift.
-2. Replace the template's `ContentView.swift` with `ios/ContentView.swift`. Leave the `...App.swift` file alone.
-3. Drag `chord-converter.html` into the project with the app target ticked. The file name must stay `chord-converter.html`.
-4. Run on the iPad or iPhone.
+The Xcode project is ready in `ios/`. It uses `chord-converter.html` straight from this folder, so any change to the player goes into the app on the next build.
 
-Builds with a free Apple ID stop working after 7 days. Audio must be an MP3 or M4A in the Files app (not Apple Music or Spotify). Songs saved in the browser don't carry into the app, and deleting the app deletes its songs.
+1. Open `ios/ChordClassroom.xcodeproj` in Xcode.
+2. Plug in the iPad or iPhone and pick it at the top of the Xcode window.
+3. The first time only: click the ChordClassroom project, then the target, then Signing & Capabilities, and pick your Apple ID under Team. If Xcode says the bundle identifier is taken, change `com.musichub.ChordClassroom` to something of your own.
+4. Press Run (the ▶ button).
+
+The app appears on the home screen as "Chord Player", with the seven chord colours as its icon. Builds with a free Apple ID stop working after 7 days. Audio must be an MP3 or M4A in the Files app (not Apple Music or Spotify). Songs saved in the browser don't carry into the app, and deleting the app deletes its songs.
 
 ## Code map (`chord-converter.html`)
 
@@ -58,4 +60,3 @@ Builds with a free Apple ID stop working after 7 days. Audio must be an MP3 or M
 - Pasting a new song over a synced one keeps the old sync times until Clear Sync or another song is loaded.
 - No backup or export of saved songs between devices.
 - No section looping, count-in or capo display.
-- No app icon or Xcode project file.

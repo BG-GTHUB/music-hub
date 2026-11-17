@@ -3,3 +3,9 @@ _site/
 .DS_Store
 deno.lock
 .claude/
+
+# Xcode
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
