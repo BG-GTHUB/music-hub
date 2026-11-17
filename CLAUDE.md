@@ -164,7 +164,6 @@ src/units.njk, unit.njk, lesson.njk, minis.njk, mini.njk
 src/assets/                # tokens.css, site.css, theme.js, site.js
 .github/workflows/deploy.yml  # builds and publishes to GitHub Pages on every push to main
 content/                   # all teaching content
-planning/                  # ideas.md, an older copy of the ideas; the private doc below is the main list
 ```
 
 Bill keeps all planning in one private Claude Doc, "Music Private Notes": https://claude.ai/artifact/7FbxEdiE1YjZwHMVCQ4fgB. It holds the to-do list, ideas (such as Bill's Blitz), music room purchases and class notes. When Bill asks to add to or see the list, use that doc. Never copy it into the repo.
