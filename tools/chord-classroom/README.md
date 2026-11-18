@@ -34,6 +34,23 @@ Songs, audio and lyric sync are saved only in the browser (or the app) on the de
 - **Lyric sync:** tap-to-sync was chosen over automatic alignment (unreliable with a band, can't run in one file) and `.lrc` import (lines rarely match the chord sheet). A cue is a lyric line plus the chord line above it, or a chord-only line. Times are in audio time, so they hold at any tempo. The highlight runs 0.3 seconds early (`FOLLOW_LEAD`). A synced song doesn't start the speed scroll on Play.
 - **iOS app:** loads the HTML with `loadHTMLString` and base URL `https://chord-classroom.invalid/` so saved songs persist; nothing is fetched. If saved songs or audio don't persist on the device, look here first (other route: `WKURLSchemeHandler`). A `WKUIDelegate` handles `confirm()`, otherwise Delete and Clear Sync silently do nothing. Audio plays with the silent switch on, and the screen stays awake.
 
+## Getting audio from YouTube (Mac only)
+
+The player can fetch a song's audio itself, using the same `yt-dlp` command Bill used to run in Terminal. A web page can't run `yt-dlp`, so a small helper (`helper/song-helper.js`) does it on the Mac:
+
+1. Double-click `helper/Start song helper.command` and leave its window open. (The first time, macOS may ask whether to open it: right-click it, choose Open.)
+2. In the player, open Song setup. A **Get audio** box appears while the helper is running.
+3. Paste a YouTube link, or just type the song title (the top YouTube result is used), and press Get audio. If the box is empty, the Song name is used.
+4. The audio loads into the player. Press Save Song to keep it with the song.
+
+Every download is also kept in iCloud Drive, in **Chord Player Songs**, so it shows in the Files app on the iPad too.
+
+- The helper listens only on this Mac (`127.0.0.1:8765`) and only answers the live site and the player opened as a file. It only accepts YouTube links or search text.
+- Chrome may ask once whether the site can "access other apps and services on this device". Allow it.
+- Needs `yt-dlp`, `ffmpeg` and `deno` (all installed with Homebrew). If downloads start failing, update yt-dlp: `brew upgrade yt-dlp`.
+- On the iPad (and in the iPad app) the box never shows; use Load audio with a file from Chord Player Songs.
+- Status: the helper and its checks were tested on 18 November 2026, but a full download could not be tested from Claude's sandbox. First real test is Bill's.
+
 ## Building the iPad or iPhone app
 
 The Xcode project is ready in `ios/`. It uses `chord-converter.html` straight from this folder, so any change to the player goes into the app on the next build.

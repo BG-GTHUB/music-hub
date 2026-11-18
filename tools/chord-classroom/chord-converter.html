@@ -542,6 +542,11 @@ kbd {
         <button class="mainButton primaryButton" onclick="convertAndHide()">Convert</button>
     </div>
 
+    <div class="setupRow" id="fetchRow" hidden>
+        <input type="text" id="fetchQuery" placeholder="YouTube link or song title" autocomplete="off" aria-label="YouTube link or song title">
+        <button class="mainButton primaryButton" id="fetchButton" onclick="fetchAudio()">Get audio</button>
+    </div>
+
     <div class="setupRow">
         <input type="file" id="audioInput" accept="audio/*" aria-label="Load audio">
         <span id="audioName"></span>
@@ -1249,6 +1254,68 @@ byId("audioInput").addEventListener("change", function(event) {
     setAudio(file, file.name);
 });
 
+// ---- Get audio from YouTube (only on Bill's Mac, through the song helper) ----
+
+const SONG_HELPER = "http://127.0.0.1:8765";
+
+// The Get audio box only shows when the song helper is running on this computer
+async function checkSongHelper() {
+    try {
+        let response = await fetch(SONG_HELPER + "/ping", { cache: "no-store" });
+        byId("fetchRow").hidden = !response.ok;
+    } catch (error) {
+        byId("fetchRow").hidden = true;
+    }
+}
+
+async function fetchAudio() {
+    let button = byId("fetchButton");
+    let query = byId("fetchQuery").value.trim() || byId("songName").value.trim();
+
+    if (!query) {
+        showStatus("Type a YouTube link or a song title.");
+        return;
+    }
+
+    if (button.disabled) return;
+
+    button.disabled = true;
+    button.innerText = "Getting audio…";
+    showStatus("Getting the audio. This can take up to a minute.");
+
+    try {
+        let response = await fetch(SONG_HELPER + "/audio?q=" + encodeURIComponent(query));
+
+        if (!response.ok) throw new Error(await response.text());
+
+        let blob = await response.blob();
+        let name = decodeURIComponent(response.headers.get("X-File-Name") || "audio.m4a");
+
+        setAudio(new File([blob], name, { type: "audio/mp4" }), name);
+
+        if (!byId("songName").value.trim()) byId("songName").value = name.replace(/\.m4a$/i, "");
+
+        byId("fetchQuery").value = "";
+        showStatus("Got \"" + name + "\". Press Save Song to keep it with this song.");
+    } catch (error) {
+        showStatus(error instanceof TypeError
+            ? "The song helper is not running on this Mac."
+            : error.message);
+        checkSongHelper();
+    } finally {
+        button.disabled = false;
+        button.innerText = "Get audio";
+    }
+}
+
+byId("fetchQuery").addEventListener("keydown", function(event) {
+    if (event.key === "Enter") fetchAudio();
+});
+
+byId("setup").addEventListener("toggle", function() {
+    if (byId("setup").open) checkSongHelper();
+});
+
 // ---- Saved audio (IndexedDB, because audio is too big for localStorage) ----
 
 function openDatabase() {
@@ -1484,6 +1551,7 @@ if (!document.documentElement.requestFullscreen) byId("fullscreenGroup").hidden 
 setPlaybackSpeed(currentPlaybackSpeed);
 setScrollSpeed(currentScrollSpeed);
 loadSongs();
+checkSongHelper();
 
 </script>
 
