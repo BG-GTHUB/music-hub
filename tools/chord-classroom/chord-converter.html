@@ -490,7 +490,6 @@ kbd {
 
         <div class="group">
             <button class="scrollButton" id="scrollToggle" onclick="toggleScroll()">Start Scroll</button>
-            <span id="scrollButtons" class="seg"></span>
             <label class="scrollLabel">
                 <input type="checkbox" id="linkScroll" checked>
                 with audio
@@ -562,7 +561,7 @@ kbd {
 
     <div class="hint">
         <kbd>Space</kbd> play / pause &nbsp; <kbd>S</kbd> scroll on / off &nbsp; <kbd>&larr;</kbd> <kbd>&rarr;</kbd> back / forward 5s &nbsp; <kbd>F</kbd> fullscreen<br>
-        Saving a song also saves its audio, lyric sync, key, tempo, scroll speed and font size on this device.<br>
+        Saving a song also saves its audio, lyric sync, key, tempo and font size on this device.<br>
         Sync Lyrics: load the audio, press Sync Lyrics, then tap <kbd>Space</kbd> as each highlighted line starts
         (<kbd>Backspace</kbd> undo, <kbd>Esc</kbd> finish). Once synced, tap any line to jump the audio there.
     </div>
@@ -737,7 +736,6 @@ function buildSong(text, semitones) {
 // ---- UI ----
 
 const TEMPOS = [0.6, 0.7, 0.8, 0.85, 0.9, 0.95, 1.0];
-const SCROLLS = [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6];
 const SCROLL_PIXELS_PER_SECOND = 33;
 
 const audioPlayer = document.getElementById("audioPlayer");
@@ -861,9 +859,10 @@ function changeFontSize() {
 
 // ---- Scrolling ----
 
+// Speed buttons were removed (lyric sync does the scrolling now); a song saved
+// with a speed still scrolls at that speed, others at 80%.
 function setScrollSpeed(speed) {
     currentScrollSpeed = speed;
-    markActive("scrollButtons", speed);
 }
 
 function scrollFrame(now) {
@@ -1481,7 +1480,6 @@ document.addEventListener("keydown", function(event) {
 // ---- Start up ----
 
 buildSpeedButtons("tempoButtons", "audioButton", TEMPOS, setPlaybackSpeed);
-buildSpeedButtons("scrollButtons", "scrollButton", SCROLLS, setScrollSpeed);
 
 // iPhone and the iPad app have no browser fullscreen, so hide the button there
 if (!document.documentElement.requestFullscreen) byId("fullscreenGroup").hidden = true;

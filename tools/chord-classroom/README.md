@@ -18,10 +18,10 @@ Songs, audio and lyric sync are saved only in the browser (or the app) on the de
 
 - **Convert:** paste an Ultimate Guitar style chord sheet (chord lines above lyric lines). Each chord is coloured by its root note. `[Verse]` style headings are grey.
 - **Audio:** load a local audio file. Play/Pause, Restart, -10s, seek bar, time, tempo 60 to 100%.
-- **Auto-scroll:** speed 40 to 160%, Start/Stop, optional "with audio" link.
+- **Auto-scroll:** Start/Stop at a steady speed, optional "with audio" link. The speed buttons were removed in November 2026 because lyric sync now does the scrolling; a song saved with a speed still uses it.
 - **Transpose:** +/- a semitone, Reset. Colours follow the new chord.
 - **Font size** slider, **Fullscreen** (hidden where the device can't do it).
-- **Saved songs:** saves the text, audio, lyric sync, key, tempo, scroll speed and font size.
+- **Saved songs:** saves the text, audio, lyric sync, key, tempo and font size.
 - **Tap-to-sync:** play the song once and tap Space as each line starts. After that the current line is highlighted and scrolled into place, and clicking a line jumps the audio there.
 - **Keys:** Space play/pause (or scroll if no audio), S scroll, Left/Right 5 seconds, F fullscreen. While syncing: Space/Enter tap, Backspace undo, Esc finish.
 
