@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Starts the Chord Player song helper when Bill logs in, and restarts it if it stops.
+  Installed as ~/Library/LaunchAgents/com.musichub.songhelper.plist. It runs a copy of the helper
+  in ~/Library/Application Support/Chord Player Song Helper, because macOS does not let
+  login items read the Desktop (see README.md).
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.musichub.songhelper</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/zsh</string>
+        <string>/Users/billgribben/Library/Application Support/Chord Player Song Helper/Start song helper.command</string>
+    </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+
+    <key>StandardOutPath</key>
+    <string>/Users/billgribben/Library/Logs/chord-song-helper.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/billgribben/Library/Logs/chord-song-helper.log</string>
+</dict>
+</plist>

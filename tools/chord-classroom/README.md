@@ -38,7 +38,7 @@ Songs, audio and lyric sync are saved only in the browser (or the app) on the de
 
 The player can fetch a song's audio itself, using the same `yt-dlp` command Bill used to run in Terminal. A web page can't run `yt-dlp`, so a small helper (`helper/song-helper.js`) does it on the Mac:
 
-1. Double-click `helper/Start song helper.command` and leave its window open. (The first time, macOS may ask whether to open it: right-click it, choose Open.)
+1. The helper starts by itself when Bill logs in to the Mac (see "Starting at login" below). Without that, double-click `helper/Start song helper.command` and leave its window open.
 2. In the player, open Song setup. A **Get audio** box appears while the helper is running.
 3. Paste a YouTube link, or just type the song title (the top YouTube result is used), and press Get audio. If the box is empty, the Song name is used.
 4. The audio loads into the player. Press Save Song to keep it with the song.
@@ -49,7 +49,16 @@ Every download is also kept in iCloud Drive, in **Chord Player Songs**, so it sh
 - Chrome may ask once whether the site can "access other apps and services on this device". Allow it.
 - Needs `yt-dlp`, `ffmpeg` and `deno` (all installed with Homebrew). If downloads start failing, update yt-dlp: `brew upgrade yt-dlp`.
 - On the iPad (and in the iPad app) the box never shows; use Load audio with a file from Chord Player Songs.
-- Status: the helper and its checks were tested on 18 November 2026, but a full download could not be tested from Claude's sandbox. First real test is Bill's.
+- Status: working. Bill's first real download (from a YouTube link) worked on 18 November 2026.
+
+### Starting at login
+
+`helper/com.musichub.songhelper.plist` is a macOS login item (a LaunchAgent). It starts the helper at login, in the background, and restarts it if it stops. macOS doesn't let login items read the Desktop, so it runs a **copy** of the helper kept in `~/Library/Application Support/Chord Player Song Helper/`. Its log is `~/Library/Logs/chord-song-helper.log`.
+
+- **After changing `song-helper.js`**, copy it there again and restart the helper:
+  `cp tools/chord-classroom/helper/song-helper.js tools/chord-classroom/helper/"Start song helper.command" ~/Library/Application\ Support/Chord\ Player\ Song\ Helper/ && launchctl kickstart -k gui/$(id -u)/com.musichub.songhelper`
+- **To turn it off:** `launchctl bootout gui/$(id -u)/com.musichub.songhelper && rm ~/Library/LaunchAgents/com.musichub.songhelper.plist`
+- **To turn it back on:** copy the plist to `~/Library/LaunchAgents/`, then `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.musichub.songhelper.plist`
 
 ## Building the iPad or iPhone app
 
