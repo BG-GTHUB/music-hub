@@ -80,7 +80,7 @@ h2 {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
     margin-bottom: 6px;
 }
@@ -90,8 +90,8 @@ h2 {
 .group {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px;
+    gap: 2px;
+    padding: 3px;
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: calc(var(--radius) + 4px);
@@ -99,25 +99,25 @@ h2 {
 
 .group[hidden] { display: none; }
 
-.transport { flex: 1 1 520px; max-width: 900px; }
+.transport { flex: 1 1 300px; max-width: 760px; }
 
 .groupLabel {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    padding: 0 6px 0 8px;
+    padding: 0 4px 0 6px;
 }
 
 button {
     font-family: inherit;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
     color: var(--text);
     background: transparent;
     border: 1px solid transparent;
     border-radius: var(--radius);
-    padding: 8px 13px;
+    padding: 7px 10px;
     cursor: pointer;
     touch-action: manipulation;
     white-space: nowrap;
@@ -140,7 +140,7 @@ summary:focus-visible {
 .mainButton { color: var(--text); }
 
 #playButton {
-    min-width: 92px;
+    min-width: 72px;
     background: var(--audio);
     color: #04121f;
     font-weight: 700;
@@ -155,21 +155,22 @@ summary:focus-visible {
 
 #scrollToggle:hover { background: #22492f; }
 
-/* Speed buttons sit together like a segmented control */
-.seg {
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 2px;
-}
+#scrollToggle.active { background: var(--scroll); color: #052012; font-weight: 700; }
 
-.seg button {
-    padding: 7px 9px;
+#tempoSelect {
+    font-family: inherit;
     font-size: 14px;
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
+    color: #cfe3ff;
+    background: var(--surface-hover);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 6px 8px;
+    cursor: pointer;
 }
 
-.seg .audioButton.active { background: var(--audio); color: #04121f; font-weight: 700; }
-.seg .scrollButton.active { background: var(--scroll); color: #052012; font-weight: 700; }
+#fullscreenButton { font-size: 17px; padding: 5px 10px; }
 
 .audioLabel { color: var(--audio); }
 .scrollLabel { color: var(--scroll); }
@@ -183,7 +184,7 @@ label.scrollLabel {
     gap: 6px;
     font-size: 14px;
     font-weight: 500;
-    padding: 0 8px;
+    padding: 0 6px;
     text-transform: none;
     letter-spacing: 0;
 }
@@ -195,7 +196,7 @@ input[type="checkbox"] {
 }
 
 #timeDisplay {
-    min-width: 96px;
+    min-width: 84px;
     text-align: center;
     font-size: 14px;
     font-variant-numeric: tabular-nums;
@@ -207,9 +208,9 @@ input[type="range"] {
     height: 28px;
 }
 
-#seekBar { flex: 1 1 140px; min-width: 100px; }
+#seekBar { flex: 1 1 60px; width: 60px; min-width: 0; }
 
-#fontSize { width: 110px; accent-color: var(--muted); }
+#fontSize { width: 70px; accent-color: var(--muted); }
 
 #transposeLabel {
     display: inline-block;
@@ -221,11 +222,12 @@ input[type="range"] {
     font-variant-numeric: tabular-nums;
 }
 
-.stepper { font-size: 20px; line-height: 1; padding: 6px 13px; }
+.stepper { font-size: 18px; line-height: 1; padding: 6px 10px; }
 
 .syncGroup { border-color: #4a3518; }
 
-#syncInfo { font-size: 14px; padding: 0 8px; }
+#syncInfo { font-size: 14px; padding: 0 6px; white-space: nowrap; }
+#syncInfo:empty { display: none; }
 
 #syncRow .group { border-color: #6b4a1d; background: var(--sync-dim); }
 
@@ -480,30 +482,26 @@ kbd {
             <input type="range" id="seekBar" min="0" max="0" step="0.1" value="0" aria-label="Song position">
             <span id="timeDisplay">0:00 / 0:00</span>
         </div>
-    </div>
 
-    <div class="barRow">
         <div class="group">
-            <span class="groupLabel audioLabel">Tempo</span>
-            <span id="tempoButtons" class="seg"></span>
+            <label class="groupLabel audioLabel" for="tempoSelect">Tempo</label>
+            <select id="tempoSelect" onchange="setPlaybackSpeed(Number(this.value))"></select>
         </div>
 
         <div class="group">
-            <button class="scrollButton" id="scrollToggle" onclick="toggleScroll()">Start Scroll</button>
+            <button class="scrollButton" id="scrollToggle" onclick="toggleScroll()">Scroll</button>
             <label class="scrollLabel">
                 <input type="checkbox" id="linkScroll" checked>
                 with audio
             </label>
         </div>
-    </div>
 
-    <div class="barRow">
         <div class="group">
             <span class="groupLabel mainLabel">Key</span>
             <button class="mainButton stepper" onclick="changeTranspose(-1)" aria-label="Transpose down">&minus;</button>
             <span id="transposeLabel">0</span>
             <button class="mainButton stepper" onclick="changeTranspose(1)" aria-label="Transpose up">+</button>
-            <button class="mainButton" onclick="changeTranspose(0)">Reset</button>
+            <button class="mainButton" id="transposeReset" onclick="changeTranspose(0)" title="Back to the original key" hidden>Reset</button>
         </div>
 
         <div class="group">
@@ -512,13 +510,12 @@ kbd {
         </div>
 
         <div class="group" id="fullscreenGroup">
-            <button class="mainButton" id="fullscreenButton" onclick="toggleFullscreen()">Fullscreen</button>
+            <button class="mainButton" id="fullscreenButton" onclick="toggleFullscreen()" title="Fullscreen" aria-label="Fullscreen">&#x26F6;</button>
         </div>
 
         <div class="group syncGroup">
             <button class="syncButton" onclick="startSync()">Sync Lyrics</button>
-            <button class="syncButton" id="clearSyncButton" onclick="clearSync()" hidden>Clear Sync</button>
-            <span id="syncInfo" class="syncLabel">Not synced</span>
+            <span id="syncInfo" class="syncLabel"></span>
         </div>
     </div>
 
@@ -553,6 +550,7 @@ kbd {
     <div class="setupRow">
         <input type="text" id="songName" placeholder="Song name">
         <button class="mainButton" onclick="saveSong()">Save Song</button>
+        <button class="mainButton" id="clearSyncButton" onclick="clearSync()" hidden>Clear lyric sync</button>
     </div>
 
     <h2>Saved songs</h2>
@@ -779,26 +777,12 @@ function showStatus(message) {
     }, 4000);
 }
 
-function buildSpeedButtons(containerId, className, speeds, handler) {
-    let container = byId(containerId);
+function addTempoOption(speed) {
+    let option = document.createElement("option");
 
-    speeds.forEach(function(speed) {
-        let button = document.createElement("button");
-
-        button.className = className;
-        button.innerText = percentage(speed);
-        button.dataset.speed = speed;
-        button.onclick = function() { handler(speed); };
-
-        container.appendChild(button);
-        container.appendChild(document.createTextNode(" "));
-    });
-}
-
-function markActive(containerId, speed) {
-    byId(containerId).querySelectorAll("button").forEach(function(button) {
-        button.classList.toggle("active", Number(button.dataset.speed) === speed);
-    });
+    option.value = String(speed);
+    option.innerText = percentage(speed);
+    byId("tempoSelect").appendChild(option);
 }
 
 // ---- Display ----
@@ -832,13 +816,18 @@ function convertAndHide() {
     }
 }
 
+// Shows the key change, and the Reset button only when the key has been changed
+function showTranspose() {
+    byId("transposeLabel").innerText = (currentTranspose > 0 ? "+" : "") + currentTranspose;
+    byId("transposeReset").hidden = currentTranspose === 0;
+}
+
 function changeTranspose(step) {
     currentTranspose = step === 0 ? 0 : currentTranspose + step;
 
     if (currentTranspose > 11 || currentTranspose < -11) currentTranspose = 0;
 
-    byId("transposeLabel").innerText =
-        (currentTranspose > 0 ? "+" : "") + currentTranspose;
+    showTranspose();
 
     convert();
 }
@@ -902,14 +891,16 @@ function startScroll() {
     scrolling = true;
     scrollPosition = window.scrollY;
     lastFrame = performance.now();
-    byId("scrollToggle").innerText = "Stop Scroll";
+    byId("scrollToggle").innerText = "Stop";
+    byId("scrollToggle").classList.add("active");
 
     requestAnimationFrame(scrollFrame);
 }
 
 function stopScroll() {
     scrolling = false;
-    byId("scrollToggle").innerText = "Start Scroll";
+    byId("scrollToggle").innerText = "Scroll";
+    byId("scrollToggle").classList.remove("active");
 }
 
 function toggleScroll() {
@@ -924,11 +915,11 @@ function hasSync() {
 }
 
 function updateSyncInfo() {
-    let info = "Not synced";
+    let info = "";
 
     if (syncing) info = "Syncing...";
-    else if (hasSync() && syncTimes.length !== cueCount) info = "Synced (lyrics changed - check)";
-    else if (hasSync()) info = "Synced \u2713";
+    else if (hasSync() && syncTimes.length !== cueCount) info = "Check sync";
+    else if (hasSync()) info = "\u2713";
 
     byId("syncInfo").innerText = info;
     byId("clearSyncButton").hidden = !hasSync() || syncing;
@@ -1172,7 +1163,14 @@ function clearAudio() {
 function setPlaybackSpeed(speed) {
     currentPlaybackSpeed = speed;
     audioPlayer.playbackRate = speed;
-    markActive("tempoButtons", speed);
+
+    // A song saved with a tempo that is not in the list still shows it
+    if (!TEMPOS.includes(speed) && !byId("tempoSelect").querySelector('[value="' + speed + '"]')) {
+        addTempoOption(speed);
+    }
+
+    byId("tempoSelect").value = String(speed);
+    byId("tempoSelect").blur();
 }
 
 function togglePlay() {
@@ -1356,8 +1354,7 @@ async function openSong(name) {
     currentTranspose = Number(meta.transpose) || 0;
     syncTimes = Array.isArray(meta.sync) ? meta.sync : [];
 
-    byId("transposeLabel").innerText =
-        (currentTranspose > 0 ? "+" : "") + currentTranspose;
+    showTranspose();
 
     setPlaybackSpeed(Number(meta.tempo) || 1.0);
     setScrollSpeed(Number(meta.scroll) || 0.8);
@@ -1479,7 +1476,7 @@ document.addEventListener("keydown", function(event) {
 
 // ---- Start up ----
 
-buildSpeedButtons("tempoButtons", "audioButton", TEMPOS, setPlaybackSpeed);
+TEMPOS.forEach(addTempoOption);
 
 // iPhone and the iPad app have no browser fullscreen, so hide the button there
 if (!document.documentElement.requestFullscreen) byId("fullscreenGroup").hidden = true;
